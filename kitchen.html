@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mətbəx Paneli</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>🔥 Mətbəx Paneli</h1>
+
+<div id="orders"></div>
+
+<audio id="sound" src="order.mp3"></audio>
+
+<script>
+let lastCount = 0;
+
+function loadOrders() {
+    let orders = JSON.parse(localStorage.getItem("orders") || "[]");
+    let box = document.getElementById("orders");
+    box.innerHTML = "";
+
+    orders.forEach((o, index) => {
+        box.innerHTML += `
+            <div style='background:white;padding:20px;margin-top:20px;border-radius:10px'>
+                🍽 <b>${o.meal}</b><br>
+                🪑 Masa: ${o.table}<br>
+                📝 Qeyd: ${o.note || "Yoxdur"}<br>
+                ⏱ ${o.time}<br><br>
+                <button onclick="accept(${index})">✔ Qəbul edildi</button>
+            </div>
+        `;
+    });
+
+    if (orders.length > lastCount) { document.getElementById("sound").play(); }
+    lastCount = orders.length;
+}
+
+function accept(id) {
+    let orders = JSON.parse(localStorage.getItem("orders") || "[]");
+    orders.splice(id, 1); // Mətbəxdən silinir
+    localStorage.setItem("orders", JSON.stringify(orders));
+    loadOrders();
+}
+
+setInterval(loadOrders, 1000);
+</script>
+
+</body>
+</html>

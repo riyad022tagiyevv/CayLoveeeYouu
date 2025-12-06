@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Paneli</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>⚙ Admin Paneli</h1>
+
+<h2>📋 Sifariş Arxivi</h2>
+<div id="orders"></div>
+
+<hr>
+
+<h2>⚠ Cərimə əlavə et</h2>
+<input id="ad" type="text" placeholder="Ad">
+<input id="fine" type="text" placeholder="Cərimə mətni">
+<button onclick="addFine()">Əlavə et</button>
+
+<h2>Mövcud cərimələr:</h2>
+<div id="fines"></div>
+
+<script>
+function loadOrders() {
+    let orders = JSON.parse(localStorage.getItem("admin_orders") || "[]");
+    let div = document.getElementById("orders");
+    div.innerHTML = "";
+    orders.forEach(o => {
+        div.innerHTML += `
+            <div style='background:white;padding:20px;margin-top:15px;border-radius:10px'>
+                🍽 ${o.meal} — 🪑 Masa ${o.table}<br>
+                📝 ${o.note || "Qeyd yoxdur"}<br>
+                ⏱ ${o.time}
+            </div>
+        `;
+    });
+}
+
+function addFine() {
+    let ad = document.getElementById("ad").value;
+    let text = document.getElementById("fine").value;
+
+    if (!ad || !text) { alert("Ad və cərimə daxil olunmalıdır!"); return; }
+
+    let fines = JSON.parse(localStorage.getItem("fines") || "[]");
+    fines.push({ad, text});
+    localStorage.setItem("fines", JSON.stringify(fines));
+    loadFines();
+
+    document.getElementById("ad").value = "";
+    document.getElementById("fine").value = "";
+}
+
+function removeFine(index) {
+    let fines = JSON.parse(localStorage.getItem("fines") || "[]");
+    fines.splice(index, 1);
+    localStorage.setItem("fines", JSON.stringify(fines));
+    loadFines();
+}
+
+function loadFines() {
+    let fines = JSON.parse(localStorage.getItem("fines") || "[]");
+    let div = document.getElementById("fines");
+    div.innerHTML = "";
+    fines.forEach((f, i) => {
+        div.innerHTML += `
+            <div style='background:#ffe5e5;padding:15px;margin-top:10px;border-radius:10px'>
+                <b>Ad:</b> ${f.ad}<br>
+                <b>Cərimə:</b> ${f.text}<br>
+                <button onclick="removeFine(${i})">Sil</button>
+            </div>
+        `;
+    });
+}
+
+loadOrders();
+loadFines();
+</script>
+
+</body>
+</html>
